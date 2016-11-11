@@ -1,0 +1,97 @@
+apiVersion: v1
+kind: List
+metadata: {}
+items:
+- kind: "DeploymentConfig"
+  apiVersion: "v1"
+  metadata:
+    name: "letsencrypt"
+  spec:
+    selector:
+      name: letsencrypt
+      deploymentconfig: letsencrypt
+    template:
+      metadata:
+        labels:
+          name: letsencrypt
+          deploymentconfig: letsencrypt
+      spec:
+        volumes:
+        - name: letsencrypt-data
+          persistentVolumeClaim:
+            claimName: letsencrypt-data
+        serviceAccountName: letsencrypt
+        containers:
+          - name: "letsencrypt"
+            image: "ausnimbus/letsencrypt:latest"
+        volumeMounts:
+        - name: letsencrypt-data
+          mountPath: "/var/lib/letsencrypt"
+      replicas: 1
+      triggers:
+        - type: "ConfigChange"
+      strategy:
+        type: "Rolling"
+      paused: false
+      revisionHistoryLimit: 1
+      minReadySeconds: 0
+- kind: PersistentVolumeClaim
+  apiVersion: v1
+  metadata:
+    name: letsencrypt-data
+    creationTimestamp:
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 2Gi
+- kind: Route
+  apiVersion: v1
+  metadata:
+    name: letsencrypt
+    creationTimestamp:
+    labels:
+      app: letsencrypt
+  spec:
+    host: letsencrypt.anapp.cloud
+    to:
+      kind: Service
+      name: letsencrypt
+    tls:
+      termination: edge
+      insecureEdgeTerminationPolicy: Redirect
+    port:
+      targetPort: 8080-tcp
+- kind: Route
+  apiVersion: v1
+  metadata:
+    name: letsencrypt-challenge
+    labels:
+      app: letsencrypt
+  spec:
+    host: letsencrypt.anapp.cloud
+    path: "/.well-known/acme-challenge"
+    to:
+      kind: Service
+      name: letsencrypt
+    port:
+      targetPort: 8080-tcp
+- kind: Service
+  apiVersion: v1
+  metadata:
+    name: letsencrypt
+    creationTimestamp:
+    labels:
+      app: letsencrypt
+  spec:
+    ports:
+    - name: 8080-tcp
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+    selector:
+      name: letsencrypt
+      deploymentconfig: letsencrypt
+    type: ClusterIP
+    sessionAffinity: None

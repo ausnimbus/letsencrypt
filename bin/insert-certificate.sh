@@ -86,17 +86,6 @@ fi
 OIFS="$IFS"
 IFS=';'
 
-#oc project openshift >/dev/null
-
-# Get all the necessary information of the the given hostname's route
-#result=''
-#projects=$(oc get project -o jsonpath='{.items[*].metadata.name}')
-#for project in $project; do
-#  result=($(oc get -n $project routes --output="jsonpath={range .items[?(@.spec.host==\"$hostname\")]}{.spec.to.name};{.metadata.namespace};{.metadata.name};{.spec}{end}"))
-#  if [ -n "${result}" ]; then
-#    break
-#  fi
-#done
 read service path termination < <(oc get -n $project route ${route} --output="jsonpath={.spec.to.name};{.spec.path};{.spec.tls..termination}")
 
 IFS="$OIFS"
@@ -106,9 +95,7 @@ echo "Configuring certificate for requests to https://${hostname}${path}"
 # Prepare key, cert and ca file to be inserted into json
 key=$(sed ':a;N;$!ba;s/\n/\\n/g' $key_file)
 cert=$(sed ':a;N;$!ba;s/\n/\\n/g' $cert_file)
-
-issuer=$(openssl x509 -issuer -noout -in $cert_file)
-ca_file="/usr/local/letsencrypt/ca/lets-encrypt-x${issuer#issuer= /C=US/O=Let\'s Encrypt/CN=Let\'s Encrypt Authority X}-cross-signed.pem"
+ca_file="/usr/local/letsencrypt/ca/lets-encrypt-x3-cross-signed.pem"
 
 if [[ -e $ca_file ]]; then
   ca=$(sed ':a;N;$!ba;s/\n/\\n/g' $ca_file)
@@ -117,11 +104,7 @@ else
 fi
 
 # Create backup of route's json definition, just in case
-if [ ! -e "${project}_${route}.routebackup.json" ]; then
-  oc export --namespace=$project routes $route --output=json > ${project}_${route}.routebackup.json
-else
-  oc export --namespace=$project routes $route --output=json > ${project}_${route}.routebackup.json.1
-fi
+oc export --namespace=$project routes $route --output=json > ${project}_${route}.routebackup.json
 
 # Modify the existing route
 case $termination in
@@ -165,4 +148,3 @@ if $dryrun; then
 else
   oc replace --namespace=$project routes $route -f ${TMPDIR}/$route.new.json
 fi
-
