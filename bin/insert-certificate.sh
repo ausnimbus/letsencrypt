@@ -110,6 +110,7 @@ oc export --namespace=$project routes $route --output=json > ${project}_${route}
 case $termination in
   edge|reencrypt)
     oc export --namespace=$project routes $route --output=json | jq " \
+    .metadata.labels.letsencrypt=\"true\" | \
     .spec.tls.key=\"${key}\" | \
     .spec.tls.certificate=\"${cert}\" | \
     .spec.tls.caCertificate=\"${ca}\"" > \
@@ -120,6 +121,7 @@ case $termination in
 
     if [ -n "$destination_ca" ]; then
       oc export --namespace=$project routes $route --output=json | jq " \
+      .metadata.labels.letsencrypt=\"true\" | \
       .spec.tls.termination=\"reencrypt\" | \
       .spec.tls.key=\"${key}\" | \
       .spec.tls.certificate=\"${cert}\" | \
@@ -133,6 +135,7 @@ case $termination in
     ;;
   *)
     oc export --namespace=$project routes $route --output=json | jq " \
+    .metadata.labels.letsencrypt=\"true\" | \
     .spec.tls.termination=\"edge\" | \
     .spec.tls.key=\"${key}\" | \
     .spec.tls.certificate=\"${cert}\" | \
