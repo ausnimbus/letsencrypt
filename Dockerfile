@@ -21,6 +21,5 @@ RUN ln -s /go/src/github.com/ausnimbus/letsencrypt /usr/local/letsencrypt && \
     cd /usr/local/letsencrypt && \
     go install github.com/ausnimbus/letsencrypt
 
-USER 1001
 VOLUME /var/lib/letsencrypt
 ENTRYPOINT ["/go/bin/letsencrypt"]
