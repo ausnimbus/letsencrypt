@@ -95,7 +95,9 @@ echo "Configuring certificate for requests to https://${hostname}${path}"
 # Prepare key, cert and ca file to be inserted into json
 key=$(sed ':a;N;$!ba;s/\n/\\n/g' $key_file)
 cert=$(sed ':a;N;$!ba;s/\n/\\n/g' $cert_file)
-ca_file="/usr/local/letsencrypt/ca/lets-encrypt-x3-cross-signed.pem"
+
+issuer=$(openssl x509 -issuer -noout -in $cert_file)
+ca_file="/usr/local/letsencrypt/ca/lets-encrypt-x${issuer#issuer= /C=US/O=Let\'s Encrypt/CN=Let\'s Encrypt Authority X}-cross-signed.pem"
 
 if [[ -e $ca_file ]]; then
   ca=$(sed ':a;N;$!ba;s/\n/\\n/g' $ca_file)
