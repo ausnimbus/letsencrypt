@@ -24,6 +24,10 @@ items:
         containers:
           - name: "letsencrypt"
             image: "ausnimbus/letsencrypt:latest"
+            env:
+              -
+                name: ROUTER_CNAME
+                value: ap-southeast-2.ausnimbus.com.au
         volumeMounts:
         - name: letsencrypt-data
           mountPath: "/var/lib/letsencrypt"
