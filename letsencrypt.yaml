@@ -23,7 +23,7 @@ items:
         serviceAccountName: letsencrypt
         containers:
           - name: "letsencrypt"
-            image: "ausnimbus/letsencrypt:latest"
+            image: "ausnimbus/openshift-letsencrypt:latest"
             env:
               -
                 name: ROUTER_CNAME

@@ -14,12 +14,12 @@ RUN yum -y install openssl jq golang-bin dig && \
     mkdir -p /srv/.well-known/acme-challenge /var/lib/letsencrypt && \
     chmod 775 /srv/.well-known/acme-challenge /var/lib/letsencrypt
 
-COPY . /go/src/github.com/ausnimbus/letsencrypt/
+COPY . /go/src/github.com/ausnimbus/openshift-letsencrypt/
 
-RUN ln -s /go/src/github.com/ausnimbus/letsencrypt /usr/local/letsencrypt && \
+RUN ln -s /go/src/github.com/ausnimbus/openshift-letsencrypt /usr/local/letsencrypt && \
     export GOPATH=/go && \
     cd /usr/local/letsencrypt && \
-    go install github.com/ausnimbus/letsencrypt
+    go install github.com/ausnimbus/openshift-letsencrypt
 
 VOLUME /var/lib/letsencrypt
-ENTRYPOINT ["/go/bin/letsencrypt"]
+ENTRYPOINT ["/go/bin/openshift-letsencrypt"]
