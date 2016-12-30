@@ -21,5 +21,7 @@ RUN ln -s /go/src/github.com/ausnimbus/openshift-letsencrypt /usr/local/letsencr
     cd /usr/local/letsencrypt && \
     go install github.com/ausnimbus/openshift-letsencrypt
 
+USER 1001
+
 VOLUME /var/lib/letsencrypt
 ENTRYPOINT ["/go/bin/openshift-letsencrypt"]
