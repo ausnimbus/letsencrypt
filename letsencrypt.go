@@ -28,11 +28,13 @@ func renew(renewCronExpr *cronexpr.Expression) {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-  if r.Header["Authorization"] != nil {
+  if r.Header["Authorization"] == nil {
+    // Set the HTTP status code to 403
+    w.WriteHeader(http.StatusForbidden)
+    w.Write([]byte("Unauthorized "))
+  } else {
     proc := sh("/usr/local/letsencrypt/bin/letsencrypt.sh '%s' '%s' 2>&1", r.Header["Domain"][0], strings.Split(r.Header["Authorization"][0], " ")[1])
     fmt.Fprintln(w,proc.stderr + proc.stdout)
-  } else {
-    w.WriteHeader(http.StatusForbidden)
   }
 }
 

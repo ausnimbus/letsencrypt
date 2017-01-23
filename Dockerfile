@@ -9,7 +9,7 @@ LABEL io.k8s.description="Provision and manage Letsencrypt certificates for AusN
 
 EXPOSE 8080
 
-RUN yum -y install openssl jq golang-bin dig && \
+RUN yum -y install openssl jq golang-bin bind-utils && \
     yum clean all && \
     mkdir -p /srv/.well-known/acme-challenge /var/lib/letsencrypt && \
     chmod 775 /srv/.well-known/acme-challenge /var/lib/letsencrypt
