@@ -5,6 +5,7 @@ set -e
 domain="$1"
 token="$2"
 router_domain=${DEFAULT_ROUTE:-'anapp.cloud'}
+router_cname=${ROUTER_CNAME:-'ap-southeast-2.ausnimbus.com.au'}}
 
 export TMPDIR=$(mktemp -d)
 trap 'rm -rf ${TMPDIR}' EXIT INT TERM
@@ -16,7 +17,7 @@ if [ $(echo ${domain} | grep ${router_domain}) ]; then
 fi
 
 # Basic check if ${domain} resolves to our loadbalancers (reduce the number of pending authorizations)
-if [ ! $(dig CNAME ${domain} +short | grep ${router_domain}) ]; then
+if [ ! $(dig CNAME ${domain} +short | grep ${router_cname}) ] && [ ! $(dig CNAME ${domain} +short | grep ${router_domain}) ]; then
   echo "Error: ${domain} does not have a valid CNAME entry"
   exit 1
 fi
