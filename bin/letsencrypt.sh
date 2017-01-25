@@ -9,15 +9,15 @@ router_domain=${DEFAULT_ROUTE:-'anapp.cloud'}
 export TMPDIR=$(mktemp -d)
 trap 'rm -rf ${TMPDIR}' EXIT INT TERM
 
-# Basic check if ${domain} resolves to our loadbalancers (reduce the number of pending authorizations)
-if [ ! $(dig CNAME ${domain} +short | grep ${router_domain}) ]; then
-  echo "error - ${domain} does not have a valid CNAME entry"
+# Basic check to block domains ending in our subdomain (these routes already have a valid certificate)
+if [ $(echo ${domain} | grep ${router_domain}) ]; then
+  echo "Error: routes on the ${router_domain} already contain a valid certificate"
   exit 1
 fi
 
-# Basic check to block domains ending in our subdomain (these routes already have a valid certificate)
-if [ $(echo ${domain} | grep ${router_domain}) ]; then
-  echo "error - routes on the ${router_domain} already contain a valid certificate"
+# Basic check if ${domain} resolves to our loadbalancers (reduce the number of pending authorizations)
+if [ ! $(dig CNAME ${domain} +short | grep ${router_domain}) ]; then
+  echo "Error: ${domain} does not have a valid CNAME entry"
   exit 1
 fi
 
