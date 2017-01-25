@@ -1,4 +1,4 @@
-FROM openshift/origin
+FROM openshift/origin:v1.4.1
 
 MAINTAINER AusNimbus <support@ausnimbus.com.au>
 
