@@ -17,7 +17,8 @@ if [ $(echo ${domain} | grep ${router_domain}) ]; then
 fi
 
 # Basic check if ${domain} resolves to our loadbalancers (reduce the number of pending authorizations)
-if [ ! $(dig CNAME ${domain} +short | grep ${router_cname}) ] && [ ! $(dig CNAME ${domain} +short | grep ${router_domain}) ]; then
+lookup=$(dig CNAME ${domain} +short)
+if ! [ $(echo ${lookup} | grep ${router_cname}) ] && ! [ $(echo ${lookup} | grep ${router_domain}) ]; then
   echo "Error: ${domain} does not have a valid CNAME entry"
   exit 1
 fi
