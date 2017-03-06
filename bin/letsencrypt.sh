@@ -5,7 +5,7 @@ set -e
 domain="$1"
 token="$2"
 router_domain=${DEFAULT_ROUTE:-'anapp.cloud'}
-router_cname=${ROUTER_CNAME:-'ap-southeast-2.ausnimbus.com.au'}}
+router_cname=${ROUTER_CNAME:-'ap-southeast-2.ausnimbus.com.au'}
 
 export TMPDIR=$(mktemp -d)
 trap 'rm -rf ${TMPDIR}' EXIT INT TERM
